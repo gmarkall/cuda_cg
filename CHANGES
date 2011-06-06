@@ -1,0 +1,11 @@
+30/09/09
+--------
+
+Modified solver to implement preconditioned conjugate gradient method with Jacobi preconditioning (See Shewchuk 94, An Introduction to the Conjugate Gradient Method Without the Agonizing Pain, section B3). The original implementation applied a symmetric Jacobi preconditioner to the matrix and vector in place. 
+
+This change allows for more ease in developing other preconditioners (e.g. SOR).
+
+14/07/09
+--------
+
+Original release.
