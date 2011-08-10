@@ -1,6 +1,17 @@
-CXX=g++
+OBJ=main.o mmio.o
+TEST=test
 
-%.o:	%.c
+CXX=g++
+CC=gcc
+
+%.o:	%.cpp
 	$(CXX) -c $^
 
-all: main.o
+%.o:    %.c
+	$(CC) -c $^
+
+all: $(OBJ)
+	$(CXX) $(OBJ) -o $(TEST)
+
+clean:
+	rm -f *.o $(TEST)
