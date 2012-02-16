@@ -26,9 +26,18 @@ This assumes that *row_ptr, *col_idx and *val contain pointers to the arrays rep
 
 To compile the solver, use:
 
-  nvcc -arch sm_13 -c gpu_solve.cu -o gpu_solve.o
+  nvcc -arch sm_XX -c gpu_solve.cu -o gpu_solve.o
 
 Then link this with your code in the usual way.
+
+Testing
+=======
+
+There is a test for the CG solver in the test directory. You may need to adjust the Makefile to suit your system. The test solves a small system and checks that the solution is sufficiently close to a reference solution. To run the tests:
+
+cd test
+make
+./test
 
 
 Problems/feedback
