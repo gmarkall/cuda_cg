@@ -8,6 +8,16 @@ struct vec {
   ValueType *val;
 };
 
+
+template<class IndexType, class ValueType>
+vec<IndexType, ValueType> new_vec(const int len)
+{
+  vec<IndexType, ValueType> v;
+  v.len = len;
+  v.val = (ValueType*)malloc(sizeof(ValueType)*len);
+  return v;
+}
+
 template<class IndexType, class ValueType>
 vec<IndexType, ValueType> read_vec(const char *filename)
 {
@@ -39,6 +49,8 @@ vec<IndexType, ValueType> read_vec(const char *filename)
       exit(1);
     }
   }
+
+  fclose(fd);
 
   printf("Finished reading vector.\n");
 

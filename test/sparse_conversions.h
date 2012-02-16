@@ -359,3 +359,19 @@ csr_matrix<IndexType, ValueType>
 
 #include "csr_to_pkt.h"
 
+// Convert a CSR matrix with 0-based indexing (as in C) to one with 1-based
+// indexing (as in Fortran)
+
+template <class IndexType, class ValueType>
+void csr_c_to_fortran(csr_matrix<IndexType, ValueType> mat)
+{
+  for (int i=0; i<=mat.num_rows; ++i)
+  {
+    mat.Ap[i] += 1;
+  }
+
+  for (int i=0; i<mat.num_nonzeros; ++i)
+  {
+    mat.Aj[i] += 1;
+  }
+}
