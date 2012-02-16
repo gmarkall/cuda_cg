@@ -50,4 +50,6 @@ int main(int argc, char **argv)
   delete_vec(res);
   cout << "Deleting reference solution vector" << endl;
   delete_vec(x);
+
+  cout << endl << "Test ran successfully." << endl;
 }
