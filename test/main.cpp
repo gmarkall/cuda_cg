@@ -1,5 +1,5 @@
 #include "sparse_io.h"
-#include "vector_io.h"
+#include "vec.h"
 #include "gpu_solve.h"
 #include <iostream>
 
