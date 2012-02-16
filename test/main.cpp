@@ -3,6 +3,8 @@
 #include "gpu_solve.h"
 #include <iostream>
 
+#define MAX_ERROR 1.0e-6
+
 using namespace std;
 
 template <class IndexType, class ValueType>
@@ -31,6 +33,14 @@ int main(int argc, char **argv)
   cout << "Calling solver" << endl;
   vec<int,double> res = new_vec<int,double>(x.len);
   cg(A, res, b);
+  double l2norm = l2_norm(res, x);
+  cout << "L2 Norm is " << l2norm << endl;
+
+  if (l2norm > MAX_ERROR)
+  {
+    printf("L2 Norm is too large - did something go wrong?\n");
+    exit(1);
+  }
 
   cout << "Deleting matrix" << endl;
   delete_csr_matrix(A, HOST_MEMORY);
