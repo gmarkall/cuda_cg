@@ -5,7 +5,7 @@ README for Conjugate Gradient GPU Solver - Graham Markall, 30/06/2009
 
 The included solver is not exactly the same as the one whose performance results are reported in the accompanying presentation - this version of the solver has been altered to make the code more straightforward, at the expense of some efficiency (more kernel launches are required).
 
-The file gpu_solve.cu implements a jacobi-preconditioner and conjugate gradient solver using the Compressed Sparse Row matrix format. The CSR matrix is expected to contain FORTRAN indices in the row_ptr and col_idx - that is, the indices are expected to begin at 1, and not 0. If you are interested in a version which uses C-style indexing of the CSR matrix, please contact me and I can modify the code accordingly.
+The file gpu_solve.cu implements a jacobi-preconditioner and conjugate gradient solver using the Compressed Sparse Row matrix format. The CSR matrix is expected to contain FORTRAN indices in the row_ptr and col_idx - that is, the indices are expected to begin at 1, and not 0. The function csr_c_to_fortran function in test/sparse_conversions.h gives an example of how to convert to the 1-based indexing if you have 0-based indexing.
 
 The solver should work on any G200-series GPU (280GTX, Tesla C1060 etc...).
 
