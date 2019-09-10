@@ -92,20 +92,6 @@ template<typename T>  void delete_device_array(T *p) { delete_array(p, DEVICE_ME
 // transfer data between host and device
 /////////////////////////////////////////////////////////////////////
 
-template<typename T>
-void memcpy_array(T * dst, const T * src, const size_t N, 
-                  const memory_location src_loc,
-                  const memory_location dst_loc)
-{
-    if(src_loc == HOST_MEMORY   && dst_loc == HOST_MEMORY  )
-        CUDA_SAFE_CALL(cudaMemcpy(dst, src, sizeof(T)*N, cudaMemcpyHostToHost));
-    if(src_loc == HOST_MEMORY   && dst_loc == DEVICE_MEMORY)
-        CUDA_SAFE_CALL(cudaMemcpy(dst, src, sizeof(T)*N, cudaMemcpyHostToDevice));
-    if(src_loc == DEVICE_MEMORY && dst_loc == HOST_MEMORY  )
-        CUDA_SAFE_CALL(cudaMemcpy(dst, src, sizeof(T)*N, cudaMemcpyDeviceToHost));
-    if(src_loc == DEVICE_MEMORY && dst_loc == DEVICE_MEMORY)
-        CUDA_SAFE_CALL(cudaMemcpy(dst, src, sizeof(T)*N, cudaMemcpyDeviceToDevice));
-}
 
 template<typename T>
  void memcpy_to_device(T *dp, const T *hp, const size_t N)

@@ -1,13 +1,11 @@
 OBJ=main.o mmio.o gpu_solve.o
 TEST=test
 
-CFLAGS=-g
+CFLAGS=-g -Wall -Werror -Wextra -pedantic
 CXXFLAGS=$(CFLAGS)
-NVCCFLAGS=-arch sm_20
-LDFLAGS=-lcudart -L/usr/local/cuda/lib64 -g
+LDFLAGS=-g
 CXX=g++
 CC=gcc
-NVCC=nvcc
 
 
 %.o:	%.cpp
@@ -15,9 +13,6 @@ NVCC=nvcc
 
 %.o:    %.c
 	$(CC) $(CFLAGS) -c $^
-
-%.o:    %.cu
-	$(NVCC) $(NVCCFLAGS) -c $^
 
 all: $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o $(TEST)

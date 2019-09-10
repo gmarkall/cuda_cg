@@ -12,13 +12,10 @@ void cg(csr_matrix<IndexType, ValueType> A, vec<IndexType, ValueType> x,
         vec<IndexType, ValueType> b)
 {
   int size_b = A.num_rows;
-  int size_row_ptr = A.num_rows+1;
-  int size_col_idx = A.num_nonzeros;
-  gpucg_solve_(A.Ap, &size_row_ptr, A.Aj, &size_col_idx, A.Ax, &size_col_idx, 
-               b.val, &size_b, x.val);
+  pcg_solve(size_b, A.Ap, A.Aj, A.Ax, x.val, b.val);
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
   cout << "CUDA CG Solver test." << endl << endl;
 
