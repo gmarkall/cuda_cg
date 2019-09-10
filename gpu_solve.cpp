@@ -12,10 +12,14 @@
 #include <sys/time.h>
 
 #include "gpu_solve.h"
+#include "opcount.h"
 
 // Solver parameters - relative tolerance and maximum iterations
 #define epsilon 1e-7
 #define IMAX 40000
+
+// Flag for counting operations
+bool opcount = true;
 
 // For timing solver
 double utime() {
@@ -26,8 +30,8 @@ double utime() {
   return (tv.tv_sec + tv.tv_usec * 1e-6);
 }
 
-// Creates a diagonal matrix stored in a vector pcmat, from the CSR matrix
-// findrm, colm, val. n is the matrix size.
+// Creates a diagonal matrix stored in a vector pcmat, from the CSR matrix.
+//. n is the matrix size.
 void create_jac(int n, int *row_ptr, int *col_idx, double *val,
                            double *pcmat) {
   for (int i = 0; i < n; i++)
@@ -49,22 +53,56 @@ void veczero(int n, double *vec) {
     vec[i] = 0;
 }
 
-// Multiplies the CSR matrix in findrm, tex_colm, tex_val by src and stores the
-// result in dest. n is the matrix size/vector length.
+// Multiply a CSR matrix by src and store the rresult in dest.
+// n is the matrix size/vector length.
 void csr_spmv(int n, double *src, double *dest, int *row_ptr, int *col_idx, double *val) {
-  for (int row = 0; row < n; row++) {
+  opcount_start_kernel("csr_spmv");
+
+  int row;
+
+  // Count row = 0 in for loop
+  opcount_add_mem_write(&row);
+  // Assume n held in register, so don't count mem read for it
+  for (row = 0; row < n; row++) {
+    opcount_start_loop_iteration();
+    // Assume dest and row in registers. Count read of dest[row]
+    opcount_add_mem_read(&dest[row]);
     dest[row] = 0;
+    // Assume row_ptr and row in registers. Count reads of row_ptr[row,row+1]
+    opcount_add_mem_read(&row_ptr[row]);
+    opcount_add_mem_read(&row_ptr[row+1]);
     int a = row_ptr[row];
     int b = row_ptr[row + 1];
-    for (int k = a; k < b; k++)
-      dest[row] +=
-          val[k - 1] * src[col_idx[k - 1] - 1];
+
+    int k;
+    // Assume a went to a register, write k to memory.
+    opcount_add_mem_write(&k);
+
+    for (int k = a; k < b; k++) {
+      opcount_start_loop_iteration();
+
+      // Read of dest[row]
+      opcount_add_mem_read(&dest[row]);
+      // Read val[k-1]
+      opcount_add_mem_read(&val[k-1]);
+      // Read col_idx[k-1]
+      opcount_add_mem_read(&col_idx[k-1]);
+      // Read src[col_idx[k-1]-1]
+      opcount_add_mem_read(&src[col_idx[k-1]]);
+      // Write dest[row]
+      opcount_add_mem_write(&dest[row]);
+      dest[row] += val[k - 1] * src[col_idx[k - 1] - 1];
+
+      opcount_finish_loop_iteration();
+    }
+
+    opcount_finish_loop_iteration();
   }
+
+  opcount_finish_kernel("csr_spmv");
 }
 
-// Computes the dot product of length-n vectors vec1 and vec2. This is reduced
-// in tmp into a single value per thread block. The reduced value is stored in
-// the array partial.
+// Computes the dot product of length-n vectors vec1 and vec2.
 double vecdot(int n, double *vec1, double *vec2) {
   double res = 0;
 

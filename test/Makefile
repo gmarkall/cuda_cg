@@ -1,4 +1,4 @@
-OBJ=main.o mmio.o gpu_solve.o
+OBJ=main.o mmio.o gpu_solve.o opcount.o
 TEST=test
 
 CFLAGS=-g -Wall -Werror -Wextra -pedantic
